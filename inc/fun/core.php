@@ -146,13 +146,16 @@ function get_views_most_post($days, $nums){
 //是否隐藏侧边栏
 function pk_hide_sidebar($post_id=null){
     global $post;
-    if(pk_get_option("hide_global_sidebar") == true){
+    if(pk_is_checked("hide_global_sidebar")){
         return true;
     }
-    if($post_id==null){
-        $post_id = $post->ID;
+    if (is_single() || is_page()){
+        if($post_id==null){
+            $post_id = $post->ID;
+        }
+        return get_post_meta($post_id,'hide_side',true)=="true";
     }
-    return get_post_meta($post_id,'hide_side',true)=="true";
+    return false;
 }
 //隐藏/显示侧边栏的输出字符
 function pk_hide_sidebar_out($hide='',$show='',$post_id=null,$echo=true){
