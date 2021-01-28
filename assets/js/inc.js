@@ -1,5 +1,3 @@
-var HOME_URL = $("meta[name='home-url']").attr("content");
-var ADMIN_AJAX_URL = HOME_URL+"/wp-admin/admin-ajax.php";
 function lg(name,val=null) {
     return val!=null ? localStorage.setItem(name,val) : localStorage.getItem(name);
 }
@@ -22,7 +20,7 @@ function puockAutoSetCommentInfo() {
 }
 //异步浏览器统计
 function asyncCacheViews(postId) {
-    $.post(ADMIN_AJAX_URL+"?action=async_pk_views",{id:postId},function (res) {
+    $.post(window.puockParams.home+"/wp-admin/admin-ajax.php?action=async_pk_views",{id:postId},function (res) {
         if(res.code!==0){
             console.error(res.msg)
         }else{
@@ -73,7 +71,7 @@ $(()=>{
         body.addClass(isLight ? pk+"-light":pk+"-dark");
         localStorage.setItem('light',isLight);
     }
-//模式初始化
+    //模式初始化
     function modeInit() {
         let light = lg('light');
         if(light!==undefined){
@@ -81,6 +79,17 @@ $(()=>{
         }
     }
     modeInit();
+
+    //模式自动切换
+    const modeChangeListeners = function (){
+        const isDark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+        modeChange(!isDark);
+    }
+    try{
+        window.matchMedia('(prefers-color-scheme:dark)').addEventListener('change', modeChangeListeners);
+    }catch (ex){
+        window.matchMedia('(prefers-color-scheme:dark)').addListener(modeChangeListeners);
+    }
 
     //显示infoToast模态框
     function infoToastShow(text,title='提示'){
