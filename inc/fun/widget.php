@@ -698,7 +698,7 @@ class puockTagCloud extends puockWidgetBase {
 add_action( 'widgets_init', function (){ register_widget('puockTagCloud'); });
 
 
-//标签云
+//一言一句话
 class puockTagHitokoto extends puockWidgetBase {
 
 
