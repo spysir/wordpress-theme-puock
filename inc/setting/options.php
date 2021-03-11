@@ -4,7 +4,7 @@
  */
 function optionsframework_option_name() {
     // Change this to use your theme slug
-    return 'optionsframework';
+    return PUOCK_OPT;
 }
 
 /**
@@ -69,11 +69,20 @@ function optionsframework_options() {
         'type' => 'radio',
         'options' => $themes
     );
+
     $options[] = array(
         'name' => '允许切换主题模式',
         'desc' => '允许',
         'id' => 'theme_mode_s',
         'std' => '1',
+        'type' => 'checkbox'
+    );
+
+    $options[] = array(
+        'name' => '导航栏显示登录入口',
+        'desc' => '允许',
+        'id' => 'show_login_url',
+        'std' => '0',
         'type' => 'checkbox'
     );
 

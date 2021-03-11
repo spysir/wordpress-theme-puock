@@ -3,6 +3,7 @@
 
 define( 'PUOCK_CUR_VER', (float)wp_get_theme()->get('Version') );
 define( 'PUOCK', 'puock' );
+define( 'PUOCK_OPT', 'puock_options' );
 
 $puock = 'Puock';
 
@@ -544,7 +545,7 @@ register_nav_menus(array(
 
 //获取主题配置
 function pk_get_option($name, $default = false) {
-    $config = get_option( 'optionsframework' );
+    $config = get_option( PUOCK_OPT );
     if ( $config && isset( $config[$name] ) ) {
         if(!empty($config[$name])){
             return $config[$name];
@@ -605,7 +606,11 @@ function pk_get_main_menu($mobile=false){
         $user = get_currentuserinfo();
         $avatar = get_avatar_url($user->user_email);
         $out .= '<li><a data-no-instant data-toggle="tooltip" title="用户中心" href="'.get_edit_profile_url().'"><img alt="用户中心" src="'.$avatar.'" class="min-avatar"></a></li>';
-    }
+    }else{
+        if(pk_is_checked('show_login_url')){
+            $out .= '<li><a data-no-instant data-toggle="tooltip" title="登入" href="'.wp_login_url().'"><img alt="登入" src="'.get_avatar_url("no-login").'" class="min-avatar"></a></li>';
+        }
+     }
     if(!$mobile){
         if(pk_is_checked('theme_mode_s')){
             $out .= '<li><a class="colorMode" data-toggle="tooltip" title="模式切换" href="javascript:void(0)"><i class="czs-moon-l"></i></a></li>';
