@@ -2,8 +2,8 @@
 .DS_store
 **/*.iml
 **/*.log
-**/*.less
 **/puock/**
 **/template-puock.php
 cache/*
 !cache/index.html
+assets/node_modules

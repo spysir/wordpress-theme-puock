@@ -6,19 +6,29 @@
     <h1>WordPress Theme - Puock</h1>
     <p>一款基于WordPress开发的高颜值的自适应主题，支持白天与黑夜模式。</p>
       <a href="https://github.com/Licoy/wordpress-theme-puock/releases/latest">
-        <img src="https://img.shields.io/github/v/release/Licoy/wordpress-theme-puock.svg?logo=git&style=for-the-badge" alt="Release-Version">
+        <img src="https://img.shields.io/github/v/release/Licoy/wordpress-theme-puock.svg?logo=git" alt="Release-Version">
       </a>
     <a href="https://github.com/Licoy/wordpress-theme-puock">
-        <img src="https://img.shields.io/badge/WordPress-V5.0+-0099CC.svg?logo=wordpress&style=for-the-badge" alt="WordPress-Version">
+        <img src="https://img.shields.io/badge/WordPress-V5.0+-0099CC.svg?logo=wordpress" alt="WordPress-Version">
       </a>
     <a href="https://github.com/Licoy/wordpress-theme-puock">
-        <img src="https://img.shields.io/badge/PHP-V7.0+-666699.svg?logo=php&style=for-the-badge" alt="PHP-Version">
+        <img src="https://img.shields.io/badge/PHP-V7.0+-666699.svg?logo=php" alt="PHP-Version">
       </a>
      <a href="https://gitee.com/licoy/wordpress-theme-puock">
-        <img src="https://img.shields.io/badge/Gitee-%E7%A0%81%E4%BA%91-CC3333.svg?style=for-the-badge" alt="Gitee">
+        <img src="https://img.shields.io/badge/Gitee-码云-CC3333.svg?logo=gitee" alt="Gitee">
       </a>
     <a href="https://github.com/Licoy">
-        <img src="https://img.shields.io/badge/author-Licoy-ff69b4.svg?style=for-the-badge" alt="Author">
+        <img src="https://img.shields.io/badge/author-Licoy-ff69b4.svg?logo=github" alt="Author">
+      </a>
+    <br>
+    <a href="https://licoy.cn/go/zs/">
+        <img src="https://img.shields.io/badge/赞赏-开发不易-CC3333.svg?logo=Buy-Me-A-Coffee" alt="赞赏支持">
+      </a>
+    <a href="https://licoy.cn/go/zs/">
+        <img src="https://img.shields.io/badge/捐赠-微信-68b600.svg?logo=WeChat" alt="微信捐赠">
+      </a>
+    <a href="https://licoy.cn/go/zs/">
+        <img src="https://img.shields.io/badge/捐赠-支付宝-00a2ef.svg?logo=AliPay" alt="支付宝捐赠">
       </a>
 </div>
 
@@ -60,6 +70,7 @@ UPDATE `wp_options` SET `option_name` = 'puock_options' WHERE `option_name` = 'o
 ## 文档
 - 主题使用文档：[立即使用](https://www.licoy.cn/puock-doc.html)
 - 建议或BUG反馈：[立即进入](https://github.com/Licoy/wordpress-theme-puock/issues)
+- QQ交流群：[670108361](https://qm.qq.com/cgi-bin/qm/qr?k=Zysuv0HRAYFmSSP_m_-li-Fwn7yMkp1S&jump_from=webapi) （此群皆为大家提供交流使用的地方，有BUG请直接提交ISSUE）
 - **若您有任何建议或BUG发现，并且您也有解决或实现的思路，欢迎直接提交PR！**
 ## 支持
 - 打赏主题以支持：[点我进入](https://licoy.cn/go/zs/)

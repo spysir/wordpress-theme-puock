@@ -53,6 +53,7 @@ if (pk_is_checked('html_page_permalink')) {
     add_action('init', 'html_page_permalink', -1);
 }
 add_filter('user_trailingslashit', 'add_init_trailingslashit', 10, 2);
+
 //添加session支持
 function register_session()
 {
@@ -452,6 +453,10 @@ if (pk_is_checked('comment_has_at')) {
 //GrAvatar头像源切换
 if (pk_get_option('gravatar_url', 'wp') != 'wp') {
     $type = pk_get_option('gravatar_url', 'wp');
+    if ($type == 'cravatar') {
+        add_filter('get_avatar', 'cr_avatar');
+        add_filter('get_avatar_url', 'cr_avatar');
+    }
     if ($type == 'cn') {
         add_filter('get_avatar', 'cn_avatar');
         add_filter('get_avatar_url', 'cn_avatar');
@@ -626,6 +631,9 @@ function pk_get_option($name, $default = false)
 //主题模式
 function pk_theme_light()
 {
+    if (isset($_COOKIE['mode'])) {
+        return $_COOKIE['mode'] == 'light';
+    }
     return pk_get_option('theme_mode', 'light') == 'light';
 }
 
@@ -747,15 +755,15 @@ function pk_get_menu_obj_to_html($menus, &$out, $mobile = false, $dpath_cur = 1,
             $out .= '<span><a href="' . $menu->url . '">' . $menu->title . '</a>';
         }
         if (count($menu->children) > 0) {
-            if($mobile){
-                $out .= '<a href="#menu-sub-'.$menu->ID.'" data-toggle="collapse"><i class="czs-angle-down-l t-sm ml-1"></i></a>';
-            }else{
+            if ($mobile) {
+                $out .= '<a href="#menu-sub-' . $menu->ID . '" data-toggle="collapse"><i class="czs-angle-down-l t-sm ml-1"></i></a>';
+            } else {
                 $out .= '<i class="czs-angle-down-l t-sm ml-1"></i>';
             }
         }
-        if($mobile){
+        if ($mobile) {
             $out .= '</span>';
-        }else{
+        } else {
             $out .= '</a>';
         }
         if (count($menu->children) > 0 && $dpath_cur < $max_dpath) {
@@ -807,18 +815,21 @@ function pk_chinese_excerpt($text, $len = 100)
 add_filter('the_excerpt', 'pk_chinese_excerpt');
 
 //静态资源加载源的链接
-function pk_get_static_url(){
+function pk_get_static_url()
+{
     $type = pk_get_option('static_load_origin', 'self');
-    switch ($type){
+    switch ($type) {
         case "jsdelivr":
-            $url_pre = "https://cdn.jsdelivr.net/gh/Licoy/wordpress-theme-puock@v".PUOCK_CUR_VER;
+            $url_pre = "https://cdn.jsdelivr.net/gh/Licoy/wordpress-theme-puock@v" . PUOCK_CUR_VER;
             break;
-        default: $url_pre = get_template_directory_uri();
+        default:
+            $url_pre = get_template_directory_uri();
     }
     return $url_pre;
 }
 
 //是否打开讨论-显示头像
-function pk_open_show_comment_avatar(){
+function pk_open_show_comment_avatar()
+{
     return get_option('show_avatars') == "1";
 }
