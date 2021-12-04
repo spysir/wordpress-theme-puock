@@ -271,3 +271,48 @@ if (pk_is_checked("upload_webp")) {
         return $plupload_init;
     }, 10, 1);
 }
+
+function pk_get_comment_os_images($name)
+{
+    if (in_array($name, array("Android", "Chrome", "Edge", "Firefox", "Linux",
+        "Macintosh", "Safari", "Windows"))) {
+        return pk_get_static_url() . '/assets/img/os/' . $name . '.svg';
+    }
+    return pk_get_static_url() . '/assets/img/os/Unknown.svg';
+}
+
+// 二维码生成
+function pk_post_qrcode($url)
+{
+    $file = '/cache/qr-' . md5($url) . '.png';
+    $filepath = get_template_directory() . $file;
+    if (!file_exists($filepath)) {
+        QRcode::png($url, $filepath, QR_ECLEVEL_L, 7, 1);
+    }
+    return $file;
+}
+
+// 评论验证码
+// request url: {host}/wp-admin/admin-ajax.php?action=puock_comment_captcha
+function pk_comment_captcha()
+{
+    $width = $_GET['w'];
+    $height = $_GET['h'];
+    $captch = new CaptchaBuilder();
+    $captch->initialize([
+        'width' => intval($width),     // 宽度
+        'height' => intval($height),     // 高度
+        'line' => true,     // 直线
+        'curve' => true,   // 曲线
+        'noise' => 1,   // 噪点背景
+        'fonts' => [get_template_directory() . '/assets/fonts/G8321-Bold.ttf']       // 字体
+    ]);
+    $result = $captch->create();
+    $text = $result->getText();
+    $_SESSION['comment_captcha'] = $text;
+    $result->output();
+    die;
+}
+
+add_action('wp_ajax_nopriv_puock_comment_captcha', 'pk_comment_captcha');
+add_action('wp_ajax_puock_comment_captcha', 'pk_comment_captcha');

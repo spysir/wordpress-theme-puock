@@ -42,6 +42,9 @@ require get_template_directory() . '/inc/fun/post-meta.php';
 require get_template_directory() . '/inc/fun/sidebar.php';
 require get_template_directory() . '/inc/fun/post-tags.php';
 require get_template_directory() . '/inc/fun/comment-notify.php';
+require get_template_directory() . '/inc/user-agent-parse.php';
+require get_template_directory() . '/inc/phpqrcode.php';
+require get_template_directory() . '/inc/php-captcha.php';
 if (pk_is_checked('no_category')) {
     require get_template_directory() . '/inc/no-category.php';
 }
@@ -68,8 +71,16 @@ function pk_toolbar_link($bar)
 {
     $bar->add_node(array(
         'id' => 'theme-setting',
-        'title' => '主题设置',
+        'title' => '🎨 主题设置',
         'href' => admin_url() . 'themes.php?page=options-framework'
+    ));
+    $bar->add_node(array(
+        'id' => 'theme-qq-qun',
+        'title' => '🐧 主题交流QQ群',
+        'href' => 'https://licoy.cn/go/puock-update.php?r=qq_qun',
+        'meta' => array(
+            'target' => 'blank'
+        )
     ));
 }
 
@@ -685,7 +696,7 @@ function pk_get_main_menu($mobile = false)
         pk_get_menu_obj_to_html($menus, $out, $mobile);
     }
     if (is_user_logged_in()) {
-        $user = get_currentuserinfo();
+        $user = wp_get_current_user();
         $avatar = get_avatar_url($user->user_email);
         $out .= '<li><a data-no-instant data-toggle="tooltip" title="用户中心" href="' . get_edit_profile_url() . '"><img alt="用户中心" src="' . $avatar . '" class="min-avatar"></a></li>';
     } else {

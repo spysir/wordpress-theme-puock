@@ -3,13 +3,11 @@ class Puock {
         tag: 'puock',
         params: {
             home: null,
-            vd_comment: false,
-            vd_vid: null,
             use_post_menu: false,
             is_single: false,
             is_pjax: false,
+            vd_comment: false,
         },
-        vdInstance: null,
         comment: {
             loading: false,
             time: 5,
@@ -32,6 +30,9 @@ class Puock {
         $(document).on("click", ".colorMode", () => {
             this.modeChange(null, true);
         });
+        $(document).on("click", ".comment-captcha", (e) => {
+            this.loadCommentCaptchaImage($(this.ct(e)))
+        });
         if (this.data.params.is_pjax) {
             this.instanceClickLoad()
         }
@@ -52,10 +53,8 @@ class Puock {
 
     pageInit() {
         this.loadParams()
-        if (this.data.params.vd_comment) {
-            this.loadVaptcha()
-        }
         this.initReadProgress()
+        this.loadCommentCaptchaImage(null)
         this.pageChangeInit()
         if (this.data.params.is_single) {
             if (this.data.params.use_post_menu) {
@@ -66,8 +65,30 @@ class Puock {
         }
     }
 
+    instanceClickLoad() {
+        InstantClick.init('mousedown');
+        InstantClick.on('change', () => {
+            this.loadParams()
+            this.modeInit();
+            this.pageChangeInit()
+            this.loadCommentInfo();
+            this.initCodeHighlight();
+            if (this.data.params.use_post_menu) {
+                this.generatePostMenuHTML()
+            }
+        })
+        this.loadCommentInfo();
+    }
+
     ct(e) {
         return e.currentTarget
+    }
+
+    loadCommentCaptchaImage(el) {
+        if (el == null) {
+            el = $(".comment-captcha");
+        }
+        el.attr("src", el.attr("data-path") + '&t='+(new Date()).getTime())
     }
 
     eventOpenSearchBox() {
@@ -157,25 +178,6 @@ class Puock {
         this.data.commentVd = this.data.params.vd_comment === 'on';
     }
 
-    loadVaptcha() {
-        if (vaptcha !== undefined) {
-            vaptcha({
-                vid: this.data.params.vd_vid,
-                type: 'invisible',
-                scene: 3, // 场景值 默认0
-                offline_server: 'http://ww.ss',
-                area: 'cn'
-            }).then((res) => {
-                this.data.vdInstance = res
-                this.data.vdInstance.listen('pass', () => {
-                    $("#comment-vd").val(this.data.vdInstance.getToken());
-                    this.data.vdInstance.reset();
-                    $.comment_form_submit_exec($("#comment-form"));
-                });
-            })
-        }
-    }
-
     initReadProgress() {
         const readProgress = $("#page-read-progress .progress-bar");
         document.addEventListener('scroll', () => {
@@ -185,26 +187,32 @@ class Puock {
     }
 
     pageChangeInit() {
+        this.loadCommentCaptchaImage(null);
+        this.generatePostQrcode();
+        $('[data-toggle="tooltip"]').tooltip({placement: 'auto', trigger: 'hover'});
         if (document.getElementById("post-main")) {
             new Viewer(document.getElementById("post-main"), {
                 navbar: false,
+                filter(image) {
+                    if (!$(image).hasClass("dont-view")) {
+                        return image.complete;
+                    }
+                    return false;
+                },
             });
         }
-        $('[data-toggle="tooltip"]').tooltip({placement: 'auto', trigger: 'hover'});
-        if (this.data.params.is_single) {
-            new ClipboardJS('.copy-post-link', {
-                text: () => {
-                    const $copyEl = $(".copy-post-link");
-                    $copyEl.find('span').html("已复制");
-                    $copyEl.attr("disabled", true);
-                    setTimeout(() => {
-                        $copyEl.find('span').html("复制链接");
-                        $copyEl.attr("disabled", false);
-                    }, 3000);
-                    return location.href;
-                }
-            });
-        }
+        new ClipboardJS('.copy-post-link', {
+            text: () => {
+                const $copyEl = $(".copy-post-link");
+                $copyEl.find('span').html("已复制");
+                $copyEl.attr("disabled", true);
+                setTimeout(() => {
+                    $copyEl.find('span').html("复制链接");
+                    $copyEl.attr("disabled", false);
+                }, 3000);
+                return location.href;
+            }
+        });
         this.lazyLoadInit()
     }
 
@@ -219,27 +227,31 @@ class Puock {
 
     generatePostMenuHTML() {
         const menus = this.getPostMenuStructure();
-        let result = "<ul>";
         if (menus.length > 0) {
-            let heightLevel = 6;
-            for (let i = 0; i < menus.length; i++) {
-                const level = parseInt(menus[i].level[1]);
-                if (level < heightLevel) {
-                    heightLevel = level;
+            let result = "<ul>";
+            if (menus.length > 0) {
+                let heightLevel = 6;
+                for (let i = 0; i < menus.length; i++) {
+                    const level = parseInt(menus[i].level[1]);
+                    if (level < heightLevel) {
+                        heightLevel = level;
+                    }
+                }
+                for (let i = 0; i < menus.length; i++) {
+                    const m = menus[i];
+                    let pl = 0;
+                    const level = parseInt(m.level[1]);
+                    if (level > heightLevel) {
+                        pl = (level - heightLevel) * 10;
+                    }
+                    result += `<li style='padding-left:${pl}px' class='t-line-1'><i class='czs-angle-right-l t-sm c-sub mr-1'></i><a class='pk-menu-to a-link t-w-400 t-md' href='#${m.id}'>${m.name}</a></li>`;
                 }
             }
-            for (let i = 0; i < menus.length; i++) {
-                const m = menus[i];
-                let pl = 0;
-                const level = parseInt(m.level[1]);
-                if (level > heightLevel) {
-                    pl = (level - heightLevel) * 10;
-                }
-                result += `<li style='padding-left:${pl}px' class='t-line-1'><i class='czs-angle-right-l t-sm c-sub mr-1'></i><a class='pk-menu-to a-link t-w-400 t-md' href='#${m.id}'>${m.name}</a></li>`;
-            }
+            result += "</ul>"
+            $("#post-menu-content").html(result)
+        } else {
+            $("#post-menus").remove()
         }
-        result += "</ul>"
-        $("#post-menu-content").html(result)
     }
 
     initCodeHighlight() {
@@ -252,13 +264,9 @@ class Puock {
 
     generatePostQrcode() {
         //生成微信分享二维码
-        if (window.QRCode !== undefined) {
-            window.QRCode.toDataURL(window.location.href, {errorCorrectionLevel: 'H'}, (err, url) => {
-                if (!err) {
-                    $("#wx-share").attr("data-original-title", `<p class='text-center t-sm mb-1 mt-1'>使用微信扫一扫</p><img class='mb-1' alt='微信二维码' src='${url}'/>`)
-                }
-            })
-        }
+        const wsEl = $("#wx-share");
+        const qrUrl = wsEl.attr("data-url");
+        wsEl.attr("data-original-title", `<p class='text-center t-sm mb-1 mt-1'>使用微信扫一扫</p><img width="180" class='mb-1' alt='微信二维码' src='${qrUrl}'/>`)
     }
 
 
@@ -293,17 +301,6 @@ class Puock {
         }, 'json').error((e) => {
             console.error(e)
         })
-    }
-
-    instanceClickLoad() {
-        InstantClick.init('mousedown');
-        InstantClick.on('change', () => {
-            this.modeInit();
-            this.pageChangeInit()
-            this.loadCommentInfo();
-            this.initCodeHighlight()
-        })
-        this.loadCommentInfo();
     }
 
     modeInit() {
@@ -408,15 +405,17 @@ class Puock {
                 this.infoToastShow('评论信息不能为空');
                 return false;
             }
+            if(this.data.params.vd_comment){
+                if ($.trim($("#comment-vd").val()) === '') {
+                    this.infoToastShow('验证码不能为空');
+                    return false;
+                }
+            }
             if ($.trim($("#comment").val()) === '') {
                 this.infoToastShow('评论内容不能为空');
                 return false;
             }
-            if (this.data.params.vd_comment && this.data.vdInstance) {
-                this.data.vdInstance.validate();
-            } else {
-                this.commentSubmit(this.ct(e))
-            }
+            this.commentSubmit(this.ct(e))
             return false;
         })
     }
@@ -430,6 +429,8 @@ class Puock {
             type: $(target).attr('method'),
             success: (data) => {
                 this.infoToastShow('评论已提交成功');
+                this.loadCommentCaptchaImage(null);
+                $("#comment-vd").val("");
                 $("#comment").val("");
                 if (this.data.comment.replyId != null) {
                     let comment = $('#comment-' + this.data.comment.replyId);
